@@ -3,7 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Equipo/Documents/Januar%20MLT/Development/University%20Works/Sistema%20Robot%20-%20Equipo%20D/Sistema%20Robot%20-%20Equipo%20D/src/sistema/robot/equipo/d/SistemaRobotEquipoD.java</file>
+            <file>file:/C:/Users/Equipo/Documents/Januar%20MLT/Development/University%20Works/Sistema%20Robot%20-%20Equipo%20D/Sistema%20Robot%20-%20Equipo%20D/src/PaqueteRobot/Sensor_Proximidad.java</file>
+            <file>file:/C:/Users/Equipo/Documents/Januar%20MLT/Development/University%20Works/Sistema%20Robot%20-%20Equipo%20D/Sistema%20Robot%20-%20Equipo%20D/src/PaqueteRobot/Altavoz.java</file>
+            <file>file:/C:/Users/Equipo/Documents/Januar%20MLT/Development/University%20Works/Sistema%20Robot%20-%20Equipo%20D/Sistema%20Robot%20-%20Equipo%20D/src/PaqueteRobot/Camara.java</file>
+            <file>file:/C:/Users/Equipo/Documents/Januar%20MLT/Development/University%20Works/Sistema%20Robot%20-%20Equipo%20D/Sistema%20Robot%20-%20Equipo%20D/src/PaqueteRobot/Percepcion.java</file>
+            <file>file:/C:/Users/Equipo/Documents/Januar%20MLT/Development/University%20Works/Sistema%20Robot%20-%20Equipo%20D/Sistema%20Robot%20-%20Equipo%20D/src/PaqueteRobot/InterfazActuador.java</file>
+            <file>file:/C:/Users/Equipo/Documents/Januar%20MLT/Development/University%20Works/Sistema%20Robot%20-%20Equipo%20D/Sistema%20Robot%20-%20Equipo%20D/src/PaqueteRobot/Actuador.java</file>
+            <file>file:/C:/Users/Equipo/Documents/Januar%20MLT/Development/University%20Works/Sistema%20Robot%20-%20Equipo%20D/Sistema%20Robot%20-%20Equipo%20D/src/PaqueteRobot/InterfazSensor.java</file>
+            <file>file:/C:/Users/Equipo/Documents/Januar%20MLT/Development/University%20Works/Sistema%20Robot%20-%20Equipo%20D/Sistema%20Robot%20-%20Equipo%20D/src/PaqueteRobot/Actuacion.java</file>
         </group>
     </open-files>
 </project-private>
