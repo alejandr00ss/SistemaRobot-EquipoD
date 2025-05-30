@@ -1,32 +1,36 @@
 package PaqueteRobot;
 
+/**
+ * Clase que representa un actuador
+ * tiene una relacion de agregacion con la clase altavoz
+ * altavoz le propaga la operacion realizarAccion
+ */
 public class Actuador implements InterfazActuador {
-    // ATRIBUTOS
+
     private int id;
     private String tipo;
     private String descripcion;
-    
-    // CONSTRUCTOR 1
-    public Actuador(int id, String tipo, String descripcion){
+
+    //CONSTRUCTOR
+    public Actuador(int id, String tipo, String descripcion) {
         this.id = id;
         this.tipo = tipo;
         this.descripcion = descripcion;
     }
     
-    // GETTERS
-    public int get_id(){return id;}
-    public String get_tipo(){return tipo;}
-    public String get_descripcion(){return descripcion;}
+    //GETTERS
+    public int getId() { return id; }
+    public String getTipo() { return tipo; }
+    public String getDescripcion() { return descripcion; }
     
-    // SETTERS
-    public void set_id(int id){this.id = id;}
-    public void set_tipo(String tipo){this.tipo = tipo;}
-    public void set_descripcion(String descripcion){this.descripcion = descripcion;}
+    //SETTERS
+    public void setId(int id) { this.id = id; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
+    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     
-    // OPERADORES
+    
     @Override
-    public int realizar_accion(){
-        return 0;
+    public int realizarAccion() {
+        return 0;//Lógica a implementar
     }
-    
 }

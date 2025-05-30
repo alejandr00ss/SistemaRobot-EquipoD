@@ -8,13 +8,13 @@ import java.util.ArrayList;
  * propaga la funcion de captarInformacion a los sensores
  * tiene una relacion de agregacion con Sensor uno a muchos
  */
-public class Camara extends ModuloEstaticoPercepcion implements InterfazSensor {
+public class SensorProximidad extends ModuloEstaticoPercepcion implements InterfazSensor {
     
     // ATRIBUTOS
     private List<Sensor> sensores;//Relacion de agregacion
     
     // CONSTRUCTOR
-    public Camara(int id, String referencia, String descripcion, 
+    public SensorProximidad(int id, String referencia, String descripcion, 
                    int largo, int ancho, int profundidad) {
         super(id, referencia, descripcion, largo, ancho, profundidad);
         this.sensores = new ArrayList<>();
@@ -34,10 +34,10 @@ public class Camara extends ModuloEstaticoPercepcion implements InterfazSensor {
     @Override
     public int procesarDatos(Object sensor) {
         return 0;//logica a implementar
-    }//heredada de ModuloEstaticoPercepcion
+    }
     
     @Override
     public Object captarInformacion() {
         return 0;//logica a implementar
-    }//heredada de ModuloEstaticoPercepcion y propagada a los sensores
+    }
 }
