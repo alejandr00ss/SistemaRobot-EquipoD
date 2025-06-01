@@ -13,6 +13,9 @@ public class SistemaRobotEquipoD {
     private static final int TAMANO_MATRIZ = 10;
     private static char[][] matriz = new char[TAMANO_MATRIZ][TAMANO_MATRIZ];
     private static Scanner scanner = new Scanner(System.in);
+    private static int posX = TAMANO_MATRIZ / 2;  // Posición inicial central
+    private static int posY = TAMANO_MATRIZ / 2;
+    private static char direccion = '^';  // '^': arriba, 'v': abajo, '<': izquierda, '>': derecha
     private static List<Usuario> usuarios = new ArrayList<>();
     private static List<Robot> robots = new ArrayList<>();
 
@@ -60,6 +63,7 @@ public class SistemaRobotEquipoD {
             menuRobot(idUsuario);
         } else {
             System.out.println("Usuario no encontrado");
+            menuUsuario();
         }
     }
 
@@ -91,7 +95,59 @@ public class SistemaRobotEquipoD {
     private static void asignarRobotUsuario(int idUsuario) {
         System.out.println("Ingrese el alias del robot:");
         String alias = scanner.next();
-        robots.add(new Robot("AAaaa",alias,"Robot",idUsuario));
+        Robot robotUsuario = new Robot("AAaaa",alias,"Robot",idUsuario);
+
+        ModuloDinamicoExtension extension = new ModuloDinamicoExtension( 32,"AAaaa", "ModuloDinamicoExtension", 32, 32, 32);
+        
+        ModuloDinamicoRotacion rotacion = new ModuloDinamicoRotacion( 32,"AAaaa", "ModuloDinamicoRotacion", 32, 32, 32);
+           
+        ModuloDinamicoHelicoidal helicoidal = new ModuloDinamicoHelicoidal( 32,"AAaaa", "ModuloDinamicoHelicoidal", 32, 32, 32);
+        
+        Camara camara = new Camara( 32,"AAaaa", "Camara", 32, 32, 32);
+        
+        SensorProximidad sensorProximidad = new SensorProximidad( 32,"AAaaa", "SensorProximidad", 32, 32, 32);
+        
+        Altavoz altavoz = new Altavoz( 32,"AAaaa", "Altavoz", 32, 32, 32);
+
+        robotUsuario.agregarModulo(extension);
+        robotUsuario.agregarModulo(rotacion);
+        robotUsuario.agregarModulo(helicoidal);
+        robotUsuario.agregarModulo(camara);
+        robotUsuario.agregarModulo(sensorProximidad);
+        robotUsuario.agregarModulo(altavoz);
+        
+        extension.setSistemaControl(new SistemaControl(extension.getId()));
+        rotacion.setSistemaControl(new SistemaControl(rotacion.getId()));
+        helicoidal.setSistemaControl(new SistemaControl(helicoidal.getId()));
+        camara.setSistemaControl(new SistemaControl(camara.getId()));
+        sensorProximidad.setSistemaControl(new SistemaControl(sensorProximidad.getId()));
+        altavoz.setSistemaControl(new SistemaControl(altavoz.getId()));
+
+        extension.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
+        rotacion.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
+        helicoidal.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
+        camara.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
+        sensorProximidad.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
+        altavoz.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
+
+        //añadir sensores
+        Sensor sensorVisual = new Sensor(35654,"Visual","Sensor de vision");
+        Sensor sensorInfrarrojo = new Sensor(23564,"Proximidad","Sensor de proximidad");
+
+        camara.agregarSensor(sensorVisual);
+        camara.setNumeroSensores(camara.getSensores().size());
+
+        sensorProximidad.agregarSensor(sensorInfrarrojo);
+        sensorProximidad.setNumeroSensores(sensorProximidad.getSensores().size());
+
+        //añadir actuadores
+        Actuador bocina = new Actuador(35654,"Bocina","Actuador de bocina");
+        altavoz.agregarActuador(bocina);
+        altavoz.setNumeroActuadores(altavoz.getActuadores().size());
+
+        robots.add(robotUsuario);
+        
+        System.out.println("Robot asignado exitosamente");
     }
 
     private static void menuRobot(int idUsuario) {
@@ -134,21 +190,37 @@ public class SistemaRobotEquipoD {
     private static void ingresarSimulacion(int idUsuario) {
         System.out.println("Ingresando a la simulación...");
 
-        inicializarMatriz();
-        colocarObstaculos();
-        colocarRobot();
-        actualizarMatriz();
+        for (Robot robot : robots) {
+            if (robot.getIdUsuario() == idUsuario) {
+                System.out.println("Bienvenido, " + robot.getAlias() + "!");
+                robot.encender();
+                actualizarMatriz();
+            }
+        }
+        
     }
 
 
+//Parte que controla la simulacion del robot y la matriz donde se mueve el robot, imprime mascota y obstaculos
+//----------------------------------------------------------------------------------------------------------------------------------------
     private static void inicializarMatriz() {
         for (int i = 0; i < TAMANO_MATRIZ; i++) {
             for (int j = 0; j < TAMANO_MATRIZ; j++) {
                 matriz[i][j] = '.';
             }
         }
+        matriz[posX][posY] = direccion;  // Posición inicial del robot
     }
+
+    private static void colocarObstaculos() {
+        matriz[2][2] = 'O';  // Obstáculo
+        matriz[5][7] = 'O';
+        matriz[8][3] = 'O';
+        matriz[3][6] = 'P';  // Mascota
+    }
+
     private static void imprimirMatriz() {
+        System.out.println("\nEstado del entorno:");
         for (int i = 0; i < TAMANO_MATRIZ; i++) {
             for (int j = 0; j < TAMANO_MATRIZ; j++) {
                 System.out.print(matriz[i][j] + " ");
@@ -157,81 +229,126 @@ public class SistemaRobotEquipoD {
         }
     }
 
-    private static void colocarObstaculos() {
-        // Colocar algunos obstáculos fijos
-        matriz[2][2] = 'O'; // Obstáculo
-        matriz[5][7] = 'O'; // Obstáculo
-        matriz[8][3] = 'O'; // Obstáculo
-        matriz[3][6] = 'P'; // Mascota (Pet)
+    private static void moverAdelante() {
+        int nuevaX = posX;
+        int nuevaY = posY;
+
+        // Calcular nueva posición según dirección
+        switch (direccion) {
+            case '^': nuevaX--; break;  // Arriba
+            case 'v': nuevaX++; break;  // Abajo
+            case '<': nuevaY--; break;  // Izquierda
+            case '>': nuevaY++; break;  // Derecha
+        }
+
+        // Verificar límites y obstáculos
+        if (nuevaX < 0 || nuevaX >= TAMANO_MATRIZ || nuevaY < 0 || nuevaY >= TAMANO_MATRIZ) {
+            System.out.println("¡No se puede mover, límite del área alcanzado!");
+            return;
+        }
+
+        char celdaDestino = matriz[nuevaX][nuevaY];
+
+        if (celdaDestino == 'O') {
+            System.out.println("¡Obstáculo detectado! Usando lógica de evasión...");
+            evitarObstaculo();
+        } else if (celdaDestino == 'P') {
+            System.out.println("¡Mascota detectada! Emitiendo sonido...");
+            matriz[nuevaX][nuevaY] = '.';  // La mascota se va
+            actualizarPosicion(nuevaX, nuevaY);
+        } else {
+            actualizarPosicion(nuevaX, nuevaY);
+        }
     }
 
-    private static void colocarRobot() {
-        Random random = new Random();
-        int x = random.nextInt(TAMANO_MATRIZ);
-        int y = random.nextInt(TAMANO_MATRIZ);
-        matriz[x][y] = 'R';
+    private static void actualizarPosicion(int nuevaX, int nuevaY) {
+        matriz[posX][posY] = '.';  // Limpiar posición anterior
+        posX = nuevaX;
+        posY = nuevaY;
+        matriz[posX][posY] = direccion;  // Actualizar con la dirección actual
     }
 
-    private static void moverRobot() { //Parte a implementar con los módulos 
-        System.out.println("Ingrese la dirección a la que desea mover el robot (arriba, abajo, izquierda, derecha):");
-        System.out.println("Desea apagar el robot?");
-        System.out.println("S/N");
-        String respuesta = scanner.next();
-        String direccion = scanner.next();
-        int x = 0;
-        int y = 0;
-        // Buscar la posición actual del robot en la matriz
-        for (int i = 0; i < TAMANO_MATRIZ; i++) {
-            for (int j = 0; j < TAMANO_MATRIZ; j++) {
-                if (matriz[i][j] == 'R') {
-                    x = i;
-                    y = j;
-                }
-            }
-        }
-        // Mover el robot en la dirección especificada
-        if (direccion.equals("arriba")) {
-            if (x > 0 && matriz[x - 1][y] != 'O') {
-                matriz[x][y] = '.';
-                matriz[x - 1][y] = 'R';
-            } else {
-                System.out.println("No se puede mover hacia arriba");
-            }
-        }
-        if (direccion.equals("abajo")) {
-            if (x < TAMANO_MATRIZ - 1 && matriz[x + 1][y]!= 'O') {
-                matriz[x][y] = '.';
-                matriz[x + 1][y] = 'R';
-            } else {
-                System.out.println("No se puede mover hacia abajo");
-            }
-        }
-        if (direccion.equals("izquierda")) {
-            if (y > 0 && matriz[x][y - 1]!= 'O') {
-                matriz[x][y] = '.';
-                matriz[x][y - 1] = 'R';
-            } else {
-                System.out.println("No se puede mover hacia la izquierda");
-            }
-        }
-        if (direccion.equals("derecha")) {
-            if (y < TAMANO_MATRIZ - 1 && matriz[x][y + 1]!= 'O') {
-                matriz[x][y] = '.';
-                matriz[x][y + 1] = 'R';
-            } else {
-                System.out.println("No se puede mover hacia la derecha");
-            }
+    private static void evitarObstaculo() {
+        // Lógica simple para esquivar (prioridad: derecha > izquierda > retroceder)
+        if (intentarMovimientoRelativo('>') || intentarMovimientoRelativo('<')) {
+            System.out.println("Obstáculo evitado");
+        } else {
+            System.out.println("¡Rodeado! Retrocediendo...");
+            girarDerecha(); girarDerecha();  // Gira 180° (ahora mira en dirección opuesta)
+            moverAdelante();  // Retrocede
         }
     }
+
+    private static boolean intentarMovimientoRelativo(char direccionRelativa) {
+        // Intenta moverse en una dirección relativa (ej: derecha o izquierda respecto a la dirección actual)
+        char direccionOriginal = direccion;
+        switch (direccionRelativa) {
+            case '>': girarDerecha(); break;
+            case '<': girarIzquierda(); break;
+        }
+        moverAdelante();
+        boolean exito = (matriz[posX][posY] == direccion);  // Verifica si se movió
+        if (!exito) {
+            direccion = direccionOriginal;  // Restaura la dirección si no se pudo mover
+        }
+        return exito;
+    }//Para revisar implementacion con los métodos
+
+    private static void girarDerecha() {
+        switch (direccion) {
+            case '^': direccion = '>'; break;
+            case '>': direccion = 'v'; break;
+            case 'v': direccion = '<'; break;
+            case '<': direccion = '^'; break;
+        }
+        matriz[posX][posY] = direccion;
+        System.out.println("Dirección actual: " + direccion);
+    }
+
+    private static void girarIzquierda() {
+        switch (direccion) {
+            case '^': direccion = '<'; break;
+            case '<': direccion = 'v'; break;
+            case 'v': direccion = '>'; break;
+            case '>': direccion = '^'; break;
+        }
+        matriz[posX][posY] = direccion;
+        System.out.println("Dirección actual: " + direccion);
+    }
+
 
     public static void actualizarMatriz() {
-        // Lógica para actualizar la matriz en función de las acciones del robot
-        // Por ejemplo, si el robot se mueve, actualizar la posición en la matriz
-        // También puedes agregar lógica para otros eventos del robot
-        //ejemplo con 7 movimientos del robot
-        for (int i = 0; i < 7; i++) {
+        inicializarMatriz();
+        colocarObstaculos();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
             imprimirMatriz();
-            moverRobot();
+            System.out.println("\nOpciones:");
+            System.out.println("1. Mover adelante");
+            System.out.println("2. Girar derecha");
+            System.out.println("3. Girar izquierda");
+            System.out.println("4. Salir");
+            System.out.print("Seleccione una opción: ");
+
+            int opcion = scanner.nextInt();
+
+            switch (opcion) {
+                case 1:
+                    moverAdelante();
+                    break;
+                case 2:
+                    girarDerecha();
+                    break;
+                case 3:
+                    girarIzquierda();
+                    break;
+                case 4:
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Opción no válida");
+            }
         }
     }
 }
