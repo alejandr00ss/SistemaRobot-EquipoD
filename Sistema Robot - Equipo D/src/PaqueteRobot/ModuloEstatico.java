@@ -8,7 +8,7 @@ package PaqueteRobot;
 
 public abstract class ModuloEstatico extends Modulo {
     @Override
-    public void recibirInfoAccion(int accion) {
+    public void recibirInfoAccion(int idProblema) {
     }
     public ModuloEstatico(int id, String referencia, String descripcion, int largo, int ancho, int profundidad) {
         super(id, referencia, descripcion, largo, ancho, profundidad, "Estatico");

@@ -1,5 +1,9 @@
 package PaqueteRobot;
 
+import java.util.List;
+import java.util.ArrayList;
+
+
 /**
  * tiene una relacion uno a uno con sistema de control, el sistema de control le pasa el mensaje
  * es una composicion con modulo
@@ -8,15 +12,17 @@ package PaqueteRobot;
  * ademas tiene una relacion reflexiva consigo misma, esta el sistema de comunicacion que
  * recibe el mensaje y otro sistema de comunicacion lo recibe.
  */
-public class SistemaComunicacion {
+public class SistemaComunicacion{
 
     private int idUsuario;
+    private int idModulo;
     private Boolean emisor; //Para resolver la reflexividad
     private Boolean receptor; //Para resolver la reflexividad
 
     // CONSTRUCTOR
-    public SistemaComunicacion(int idUsuario) {  
+    public SistemaComunicacion(int idUsuario, int idModulo) {
         this.idUsuario = idUsuario;
+        this.idModulo = idModulo;
         this.emisor = false;
         this.receptor = false;
     }
@@ -26,6 +32,7 @@ public class SistemaComunicacion {
         return idUsuario;
     }
 
+
     public Boolean getEmisor(){
         return emisor;
     }
@@ -34,10 +41,15 @@ public class SistemaComunicacion {
         return receptor;
     }
 
+    public int getIdModulo(){
+        return idModulo;
+    }
+
     // SETTERS
     public void setIdUsuario(int idUsuario){
         this.idUsuario = idUsuario;
     }
+
 
     public void setEmisor(Boolean emisor){
         this.emisor = emisor;
@@ -46,13 +58,29 @@ public class SistemaComunicacion {
     public void setReceptor(Boolean receptor){
         this.receptor = receptor;
     }
+
+    public void setIdModulo(int idModulo){
+        this.idModulo = idModulo;
+    }
     
     // OPERACIONES
-    public void enviarMensaje(String mensaje){
-        // se envia el mensaje
+    public List<String> enviarMensaje(String mensaje,int idModulo){
+        if (emisor == true){
+            List<String> mensajes = new ArrayList<>();
+            mensajes.add(mensaje);
+            mensajes.add(String.valueOf(idModulo));
+            return mensajes;
+        } else {
+            System.out.println("El mensaje no se pudo enviar");
+            return null;
+        }
     }
 
     public void recibirMensaje(String mensaje){
-        // se recibe el mensaje
+        if (receptor == true){
+            System.out.println("El mensaje es: " + mensaje);
+        } else {
+            System.out.println("El mensaje no se pudo recibir");
+        }
     }
 }

@@ -123,14 +123,23 @@ public abstract class Modulo implements InterfazModulo, InterfazSistemaControl {
 
     @Override
     public boolean enviarRespuestaAccion() {
-        return false; //Parte a revisar, como se propaga la operacion
+        if (this.sistemaControl != null) {
+            return this.sistemaControl.enviarRespuestaAccion();
+        } else {
+            System.out.println("Error: SistemaControl no inicializado en Modulo " + getId());
+            return false;
+        }
     }
 
     @Override
     public List<String> gestionarSolucion(int idAccion) {
-        return null;
-    } //Parte a revisar, como se propaga la operacion
-
+        if (this.sistemaControl != null) {
+            return this.sistemaControl.gestionarSolucion(idAccion);
+        } else {
+            System.out.println("Error: SistemaControl no inicializado en Modulo " + getId());
+            return null;
+        }
+    }
     // MÉTODOS
     public abstract void recibirInfoAccion(int idAccion);
 }

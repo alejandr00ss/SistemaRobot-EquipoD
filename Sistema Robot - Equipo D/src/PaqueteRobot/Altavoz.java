@@ -41,7 +41,6 @@ public class Altavoz extends ModuloEstaticoActuacion implements InterfazActuador
                 resultado = 0;
             }
         }
-        
         return resultado;
     } //heredada de ModuloEstaticoActuacion y propagada a los actuadores
 }

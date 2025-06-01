@@ -23,8 +23,8 @@ public abstract class ModuloEstaticoPercepcion extends ModuloEstatico {
     // SETTERS
     public void setNumeroSensores(int numeroSensores) { this.numeroSensores = numeroSensores; }
     
-    // OPERACIONES
+    // OPERACIONES ABSTRACTAS
     public abstract int procesarDatos(Object sensor);
     
-    public abstract Object captarInformacion();
+    public abstract Object captarInformacion(char rowChar, char colChar, char[][] matriz);
 }
