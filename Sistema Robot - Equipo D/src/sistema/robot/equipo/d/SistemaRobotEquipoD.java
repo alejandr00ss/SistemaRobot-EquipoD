@@ -123,13 +123,13 @@ public class SistemaRobotEquipoD {
         sensorProximidad.setSistemaControl(new SistemaControl(sensorProximidad.getId()));
         altavoz.setSistemaControl(new SistemaControl(altavoz.getId()));
 
-        extension.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
-        rotacion.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
-        helicoidal.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
-        camara.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
-        sensorProximidad.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
-        altavoz.setSistemaComunicacion(new SistemaComunicacion(idUsuario));
-
+        extension.setSistemaComunicacion(new SistemaComunicacion(idUsuario,(extension.getId())));
+        rotacion.setSistemaComunicacion(new SistemaComunicacion(idUsuario,(rotacion.getId())));
+        helicoidal.setSistemaComunicacion(new SistemaComunicacion(idUsuario,(helicoidal.getId())));
+        camara.setSistemaComunicacion(new SistemaComunicacion(idUsuario,(camara.getId())));
+        sensorProximidad.setSistemaComunicacion(new SistemaComunicacion(idUsuario,(sensorProximidad.getId())));
+        altavoz.setSistemaComunicacion(new SistemaComunicacion(idUsuario,(altavoz.getId())));
+        
         //añadir sensores
         Sensor sensorVisual = new Sensor(35654,"Visual","Sensor de vision");
         Sensor sensorInfrarrojo = new Sensor(23564,"Proximidad","Sensor de proximidad");
@@ -229,187 +229,6 @@ public class SistemaRobotEquipoD {
         }
     }
 
-    private static void moverRobot(Robot robot) {
-        int nuevaX = posX;
-        int nuevaY = posY;
-        
-        // Calcular nueva posición según dirección
-        switch (direccion) {
-            case '^': nuevaX--; break;
-            case 'v': nuevaX++; break;
-            case '<': nuevaY--; break;
-            case '>': nuevaY++; break;
-        }
-        
-        // Verificar límites y obstáculos usando los módulos del robot
-        boolean puedeMoverse = true;
-        String tipoObstaculo = "ninguno";
-        
-        for (Modulo modulo : robot.getModulos()) {
-            // Detección de obstáculos con sensor de proximidad
-            if (modulo instanceof SensorProximidad) {
-                SensorProximidad sensor = (SensorProximidad) modulo;
-                SistemaControl controlSensor = sensor.getSistemaControl();
-                SistemaComunicacion comSensor = sensor.getSistemaComunicacion();
-                
-                // Validar con sistema de control
-                if (controlSensor.enviarRespuestaAccion()) {
-                    puedeMoverse = !sensor.detectarObstaculo(nuevaX, nuevaY, matriz);
-                    comSensor.enviarMensaje("Detección completada");
-                }
-            }
-            
-            // Identificación del tipo de obstáculo con cámara
-            if (modulo instanceof Camara && matriz[nuevaX][nuevaY] != '.') {
-                Camara camara = (Camara) modulo;
-                SistemaControl controlCamara = camara.getSistemaControl();
-                SistemaComunicacion comCamara = camara.getSistemaComunicacion();
-                
-                if (controlCamara.enviarRespuestaAccion()) {
-                    tipoObstaculo = camara.identificarObstaculo(matriz[nuevaX][nuevaY]);
-                    comCamara.enviarMensaje("Obstáculo identificado: " + tipoObstaculo);
-                }
-            }
-        }
-        
-        // Verificar límites del área
-        if (nuevaX < 0 || nuevaX >= TAMANO_MATRIZ || nuevaY < 0 || nuevaY >= TAMANO_MATRIZ) {
-            System.out.println("¡Límite del área alcanzado!");
-            return;
-        }
-        
-        // Manejo de obstáculos
-        if (!puedeMoverse) {
-            System.out.println("¡Obstáculo detectado! Tipo: " + tipoObstaculo);
-            evitarObstaculo(robot, tipoObstaculo);
-            return;
-        }
-        
-        // Manejo de mascotas con altavoz
-        if (matriz[nuevaX][nuevaY] == MASCOTA) {
-            for (Modulo modulo : robot.getModulos()) {
-                if (modulo instanceof Altavoz) {
-                    Altavoz altavoz = (Altavoz) modulo;
-                    SistemaControl controlAltavoz = altavoz.getSistemaControl();
-                    SistemaComunicacion comAltavoz = altavoz.getSistemaComunicacion();
-                    
-                    if (controlAltavoz.enviarRespuestaAccion()) {
-                        altavoz.emitirSonido();
-                        comAltavoz.enviarMensaje("Sonido emitido para ahuyentar mascota");
-                        matriz[nuevaX][nuevaY] = VACIO;
-                    }
-                }
-            }
-        }
-        
-        // Ejecutar movimiento con módulos dinámicos
-        for (Modulo modulo : robot.getModulos()) {
-            if (modulo instanceof ModuloDinamicoExtension && direccion == '^') {
-                ModuloDinamicoExtension extension = (ModuloDinamicoExtension) modulo;
-                SistemaControl controlExtension = extension.getSistemaControl();
-                SistemaComunicacion comExtension = extension.getSistemaComunicacion();
-                
-                if (controlExtension.enviarRespuestaAccion()) {
-                    extension.moverseAdelante();
-                    comExtension.enviarMensaje("Movimiento hacia adelante ejecutado");
-                }
-            }
-            // Implementar lógica similar para otros módulos dinámicos
-        }
-        
-        // Actualizar posición
-        matriz[posX][posY] = VACIO;
-        posX = nuevaX;
-        posY = nuevaY;
-        matriz[posX][posY] = direccion;
-    }
-    
-    private static void evitarObstaculo(Robot robot, String tipoObstaculo) {
-        // Lógica mejorada para evitar obstáculos usando módulos dinámicos
-        boolean obstaculoEvitado = false;
-        
-        // Intentar esquivar a la derecha
-        if (intentarEsquivar(robot, '>', tipoObstaculo)) {
-            System.out.println("Obstáculo evitado girando a la derecha");
-            obstaculoEvitado = true;
-        } 
-        // Intentar esquivar a la izquierda
-        else if (intentarEsquivar(robot, '<', tipoObstaculo)) {
-            System.out.println("Obstáculo evitado girando a la izquierda");
-            obstaculoEvitado = true;
-        }
-        
-        // Si no se pudo esquivar, retroceder
-        if (!obstaculoEvitado) {
-            System.out.println("¡Rodeado! Retrocediendo...");
-            for (Modulo modulo : robot.getModulos()) {
-                if (modulo instanceof ModuloDinamicoHelicoidal) {
-                    ModuloDinamicoHelicoidal helicoidal = (ModuloDinamicoHelicoidal) modulo;
-                    SistemaControl controlHelicoidal = helicoidal.getSistemaControl();
-                    SistemaComunicacion comHelicoidal = helicoidal.getSistemaComunicacion();
-                    
-                    if (controlHelicoidal.enviarRespuestaAccion()) {
-                        helicoidal.moverseAtras();
-                        comHelicoidal.enviarMensaje("Movimiento helicoidal hacia atrás ejecutado");
-                    }
-                }
-            }
-        }
-    }
-    
-    private static boolean intentarEsquivar(Robot robot, char direccionGiro, String tipoObstaculo) {
-        char direccionOriginal = direccion;
-        
-        // Girar usando módulo de rotación
-        for (Modulo modulo : robot.getModulos()) {
-            if (modulo instanceof ModuloDinamicoRotacion) {
-                ModuloDinamicoRotacion rotacion = (ModuloDinamicoRotacion) modulo;
-                SistemaControl controlRotacion = rotacion.getSistemaControl();
-                SistemaComunicacion comRotacion = rotacion.getSistemaComunicacion();
-                
-                if (controlRotacion.enviarRespuestaAccion()) {
-                    if (direccionGiro == '>') {
-                        rotacion.girarDerecha();
-                        comRotacion.enviarMensaje("Giro a la derecha ejecutado");
-                        direccion = '>';
-                    } else {
-                        rotacion.girarIzquierda();
-                        comRotacion.enviarMensaje("Giro a la izquierda ejecutado");
-                        direccion = '<';
-                    }
-                }
-            }
-        }
-        
-        // Verificar si el movimiento es posible
-        boolean movimientoValido = true;
-        int tempX = posX;
-        int tempY = posY;
-        
-        switch (direccion) {
-            case '^': tempX--; break;
-            case 'v': tempX++; break;
-            case '<': tempY--; break;
-            case '>': tempY++; break;
-        }
-        
-        // Verificar con sensores
-        for (Modulo modulo : robot.getModulos()) {
-            if (modulo instanceof SensorProximidad) {
-                SensorProximidad sensor = (SensorProximidad) modulo;
-                if (sensor.detectarObstaculo(tempX, tempY, matriz)) {
-                    movimientoValido = false;
-                }
-            }
-        }
-        
-        if (!movimientoValido) {
-            direccion = direccionOriginal;
-            return false;
-        }
-        
-        return true;
-    }
     private static void girarDerecha() {
         switch (direccion) {
             case '^': direccion = '>'; break;
@@ -432,6 +251,67 @@ public class SistemaRobotEquipoD {
         System.out.println("Dirección actual: " + direccion);
     }
 
+    private static void avanzar(Robot robot, char xprox, char yprox, char[][] matriz) {
+
+        int id = 0;
+        SensorProximidad sensorProximidad = null;
+        Camara camara = null;
+        Altavoz altavoz = null;
+        ModuloDinamicoExtension extension = null;
+        ModuloDinamicoRotacion rotacion = null;
+        ModuloDinamicoHelicoidal helicoidal = null;
+
+        for(Modulo modulo : robot.getModulos()){
+            if(modulo instanceof SensorProximidad){
+                sensorProximidad = (SensorProximidad) modulo;
+            }
+            if (modulo instanceof Camara){
+                camara = (Camara) modulo;
+            }
+            if (modulo instanceof Altavoz){
+                altavoz = (Altavoz) modulo;
+            }
+            if (modulo instanceof ModuloDinamicoExtension){
+                extension = (ModuloDinamicoExtension) modulo;
+            }
+            if (modulo instanceof ModuloDinamicoRotacion){
+                rotacion = (ModuloDinamicoRotacion) modulo;
+            }
+            if (modulo instanceof ModuloDinamicoHelicoidal){
+                helicoidal = (ModuloDinamicoHelicoidal) modulo;
+            }
+        }
+        
+        inicializarMatriz();
+        colocarObstaculos();
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Presione w para avanzar");
+        System.out.println("Presione a para girar a la izquierda");
+        System.out.println("Presione d para girar a la derecha");
+        char opcion = scanner.next().charAt(0);
+
+        if (opcion == 'w'){
+            sensorProximidad.getSistemaComunicacion().setReceptor(true);
+            sensorProximidad.getSistemaComunicacion().recibirMensaje("Avanzar");
+            sensorProximidad.getSistemaComunicacion().setReceptor(false);
+            sensorProximidad.getSistemaComunicacion().setEmisor(true);
+            sensorProximidad.getSistemaComunicacion().enviarMensaje("Avanzar", sensorProximidad.getId());
+            sensorProximidad.getSistemaControl().interpretarMensaje("Avanzar");
+        }
+
+        if (encontrado instanceof List<?>) {
+            List<?> lista = (List<?>) encontrado;
+            if (!lista.isEmpty()) {
+                for (Object obj: lista) {
+                    if (obj instanceof Boolean){
+                        int id = sensorProximidad.procesarDatos(obj)
+                    }
+                }
+            }
+        }
+    }
+
 
     public static void actualizarMatriz(Robot robot) {
         inicializarMatriz();
@@ -451,13 +331,13 @@ public class SistemaRobotEquipoD {
 
             switch (opcion) {
                 case 1:
-                    moverRobot(Robot);)
+                    
                     break;
                 case 2:
-                    girarDerecha();
+                    
                     break;
                 case 3:
-                    girarIzquierda();
+                    
                     break;
                 case 4:
                     scanner.close();

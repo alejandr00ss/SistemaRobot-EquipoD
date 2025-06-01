@@ -2,7 +2,6 @@ package PaqueteRobot;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 
 /**
@@ -16,13 +15,14 @@ import java.util.Scanner;
 public class SistemaComunicacion{
 
     private int idUsuario;
+    private int idModulo;
     private Boolean emisor; //Para resolver la reflexividad
     private Boolean receptor; //Para resolver la reflexividad
-    private List<String> listaMensaje = new ArrayList<>();
 
     // CONSTRUCTOR
-    public SistemaComunicacion(int idUsuario) {
+    public SistemaComunicacion(int idUsuario, int idModulo) {
         this.idUsuario = idUsuario;
+        this.idModulo = idModulo;
         this.emisor = false;
         this.receptor = false;
     }
@@ -41,6 +41,10 @@ public class SistemaComunicacion{
         return receptor;
     }
 
+    public int getIdModulo(){
+        return idModulo;
+    }
+
     // SETTERS
     public void setIdUsuario(int idUsuario){
         this.idUsuario = idUsuario;
@@ -54,25 +58,27 @@ public class SistemaComunicacion{
     public void setReceptor(Boolean receptor){
         this.receptor = receptor;
     }
+
+    public void setIdModulo(int idModulo){
+        this.idModulo = idModulo;
+    }
     
     // OPERACIONES
-    public List<String> enviarMensaje(){
+    public List<String> enviarMensaje(String mensaje,int idModulo){
         if (emisor == true){
-            Scanner sc = new Scanner(System.in);
-            System.out.println("Ingrese el mensaje: ");
-            String mensaje = sc.nextLine();
-            listaMensaje.add(mensaje);
-            return listaMensaje;
+            List<String> mensajes = new ArrayList<>();
+            mensajes.add(mensaje);
+            mensajes.add(String.valueOf(idModulo));
+            return mensajes;
         } else {
             System.out.println("El mensaje no se pudo enviar");
             return null;
         }
     }
 
-    public void recibirMensaje(List<String> mensaje){
+    public void recibirMensaje(String mensaje){
         if (receptor == true){
-            this.listaMensaje = mensaje;
-            System.out.println("El mensaje es: " + listaMensaje);
+            System.out.println("El mensaje es: " + mensaje);
         } else {
             System.out.println("El mensaje no se pudo recibir");
         }

@@ -45,11 +45,12 @@ public class SistemaControl implements InterfazSistemaControl {
             System.out.println("Posibles soluciones: " + posiblesSoluciones);
         } else if (mensaje.equals("LIBRE")) {
             System.out.println("Estado: Camino libre.");
-            // Lógica adicional: continuar con la tarea actual.
-        } else if (mensaje.equals("ADELANTE")) {
+
+        } else if (mensaje.equals("Avanzar")) {
             System.out.println("Comando: Mover adelante.");
-            // Lógica para interactuar con actuadores para mover el robot
-            // Ejemplo: if (robotPrincipal != null) robotPrincipal.mover(Direccion.ADELANTE);
+            gestionarSolucion(56754);
+
+
             enviarRespuestaAccion(); // Confirmar que el comando se está procesando
         } else if (mensaje.equals("DERECHA")) {
             System.out.println("Comando: Girar derecha.");
@@ -67,7 +68,7 @@ public class SistemaControl implements InterfazSistemaControl {
 
     @Override
     public boolean enviarRespuestaAccion() {
-        System.out.println("[SistemaControl Módulo " + idModulo + "] Respuesta de acción enviada (simulado).");
+        System.out.println("[SistemaControl Módulo " + idModulo + "] Respuesta de acción enviada.");
         return true;
     }
 
@@ -75,22 +76,10 @@ public class SistemaControl implements InterfazSistemaControl {
     public List<String> gestionarSolucion(int idProblema) {
         System.out.println("[SistemaControl Módulo " + idModulo + "] Gestionando solución para ID de problema: " + idProblema);
         List<String> soluciones = new ArrayList<>();
-        switch (idProblema) {
-            case 1: // Suponiendo que 1 es para "OBJETO"
-                soluciones.add("Evaluar dimensiones del objeto.");
-                soluciones.add("Intentar rodear por la derecha si hay espacio.");
-                soluciones.add("Intentar rodear por la izquierda si hay espacio.");
-                soluciones.add("Notificar al usuario y esperar instrucciones.");
-                break;
-            case 2: // Suponiendo que 2 es para "BATERIA_BAJA"
-                soluciones.add("Buscar estación de carga más cercana.");
-                soluciones.add("Reducir consumo de energía (apagar módulos no esenciales).");
-                soluciones.add("Notificar al usuario sobre nivel de batería bajo.");
-                break;
-            // Otros casos para diferentes IDs de problemas
-            default:
-                soluciones.add("No hay soluciones predefinidas para el ID de problema: " + idProblema);
-                break;
+        
+        if (idProblema == 56754) {
+            soluciones.add("Avanzar");
+            soluciones.add(toString(idModulo))
         }
         return soluciones;
     }
