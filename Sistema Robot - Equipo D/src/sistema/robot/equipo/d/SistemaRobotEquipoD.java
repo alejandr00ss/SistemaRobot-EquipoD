@@ -194,7 +194,7 @@ public class SistemaRobotEquipoD {
             if (robot.getIdUsuario() == idUsuario) {
                 System.out.println("Bienvenido, " + robot.getAlias() + "!");
                 robot.encender();
-                actualizarMatriz();
+                actualizarMatriz(robot);
             }
         }
         
@@ -229,71 +229,187 @@ public class SistemaRobotEquipoD {
         }
     }
 
-    private static void moverAdelante() {
+    private static void moverRobot(Robot robot) {
         int nuevaX = posX;
         int nuevaY = posY;
-
+        
         // Calcular nueva posición según dirección
         switch (direccion) {
-            case '^': nuevaX--; break;  // Arriba
-            case 'v': nuevaX++; break;  // Abajo
-            case '<': nuevaY--; break;  // Izquierda
-            case '>': nuevaY++; break;  // Derecha
+            case '^': nuevaX--; break;
+            case 'v': nuevaX++; break;
+            case '<': nuevaY--; break;
+            case '>': nuevaY++; break;
         }
-
-        // Verificar límites y obstáculos
+        
+        // Verificar límites y obstáculos usando los módulos del robot
+        boolean puedeMoverse = true;
+        String tipoObstaculo = "ninguno";
+        
+        for (Modulo modulo : robot.getModulos()) {
+            // Detección de obstáculos con sensor de proximidad
+            if (modulo instanceof SensorProximidad) {
+                SensorProximidad sensor = (SensorProximidad) modulo;
+                SistemaControl controlSensor = sensor.getSistemaControl();
+                SistemaComunicacion comSensor = sensor.getSistemaComunicacion();
+                
+                // Validar con sistema de control
+                if (controlSensor.enviarRespuestaAccion()) {
+                    puedeMoverse = !sensor.detectarObstaculo(nuevaX, nuevaY, matriz);
+                    comSensor.enviarMensaje("Detección completada");
+                }
+            }
+            
+            // Identificación del tipo de obstáculo con cámara
+            if (modulo instanceof Camara && matriz[nuevaX][nuevaY] != '.') {
+                Camara camara = (Camara) modulo;
+                SistemaControl controlCamara = camara.getSistemaControl();
+                SistemaComunicacion comCamara = camara.getSistemaComunicacion();
+                
+                if (controlCamara.enviarRespuestaAccion()) {
+                    tipoObstaculo = camara.identificarObstaculo(matriz[nuevaX][nuevaY]);
+                    comCamara.enviarMensaje("Obstáculo identificado: " + tipoObstaculo);
+                }
+            }
+        }
+        
+        // Verificar límites del área
         if (nuevaX < 0 || nuevaX >= TAMANO_MATRIZ || nuevaY < 0 || nuevaY >= TAMANO_MATRIZ) {
-            System.out.println("¡No se puede mover, límite del área alcanzado!");
+            System.out.println("¡Límite del área alcanzado!");
             return;
         }
-
-        char celdaDestino = matriz[nuevaX][nuevaY];
-
-        if (celdaDestino == 'O') {
-            System.out.println("¡Obstáculo detectado! Usando lógica de evasión...");
-            evitarObstaculo();
-        } else if (celdaDestino == 'P') {
-            System.out.println("¡Mascota detectada! Emitiendo sonido...");
-            matriz[nuevaX][nuevaY] = '.';  // La mascota se va
-            actualizarPosicion(nuevaX, nuevaY);
-        } else {
-            actualizarPosicion(nuevaX, nuevaY);
+        
+        // Manejo de obstáculos
+        if (!puedeMoverse) {
+            System.out.println("¡Obstáculo detectado! Tipo: " + tipoObstaculo);
+            evitarObstaculo(robot, tipoObstaculo);
+            return;
         }
-    }
-
-    private static void actualizarPosicion(int nuevaX, int nuevaY) {
-        matriz[posX][posY] = '.';  // Limpiar posición anterior
+        
+        // Manejo de mascotas con altavoz
+        if (matriz[nuevaX][nuevaY] == MASCOTA) {
+            for (Modulo modulo : robot.getModulos()) {
+                if (modulo instanceof Altavoz) {
+                    Altavoz altavoz = (Altavoz) modulo;
+                    SistemaControl controlAltavoz = altavoz.getSistemaControl();
+                    SistemaComunicacion comAltavoz = altavoz.getSistemaComunicacion();
+                    
+                    if (controlAltavoz.enviarRespuestaAccion()) {
+                        altavoz.emitirSonido();
+                        comAltavoz.enviarMensaje("Sonido emitido para ahuyentar mascota");
+                        matriz[nuevaX][nuevaY] = VACIO;
+                    }
+                }
+            }
+        }
+        
+        // Ejecutar movimiento con módulos dinámicos
+        for (Modulo modulo : robot.getModulos()) {
+            if (modulo instanceof ModuloDinamicoExtension && direccion == '^') {
+                ModuloDinamicoExtension extension = (ModuloDinamicoExtension) modulo;
+                SistemaControl controlExtension = extension.getSistemaControl();
+                SistemaComunicacion comExtension = extension.getSistemaComunicacion();
+                
+                if (controlExtension.enviarRespuestaAccion()) {
+                    extension.moverseAdelante();
+                    comExtension.enviarMensaje("Movimiento hacia adelante ejecutado");
+                }
+            }
+            // Implementar lógica similar para otros módulos dinámicos
+        }
+        
+        // Actualizar posición
+        matriz[posX][posY] = VACIO;
         posX = nuevaX;
         posY = nuevaY;
-        matriz[posX][posY] = direccion;  // Actualizar con la dirección actual
+        matriz[posX][posY] = direccion;
     }
-
-    private static void evitarObstaculo() {
-        // Lógica simple para esquivar (prioridad: derecha > izquierda > retroceder)
-        if (intentarMovimientoRelativo('>') || intentarMovimientoRelativo('<')) {
-            System.out.println("Obstáculo evitado");
-        } else {
+    
+    private static void evitarObstaculo(Robot robot, String tipoObstaculo) {
+        // Lógica mejorada para evitar obstáculos usando módulos dinámicos
+        boolean obstaculoEvitado = false;
+        
+        // Intentar esquivar a la derecha
+        if (intentarEsquivar(robot, '>', tipoObstaculo)) {
+            System.out.println("Obstáculo evitado girando a la derecha");
+            obstaculoEvitado = true;
+        } 
+        // Intentar esquivar a la izquierda
+        else if (intentarEsquivar(robot, '<', tipoObstaculo)) {
+            System.out.println("Obstáculo evitado girando a la izquierda");
+            obstaculoEvitado = true;
+        }
+        
+        // Si no se pudo esquivar, retroceder
+        if (!obstaculoEvitado) {
             System.out.println("¡Rodeado! Retrocediendo...");
-            girarDerecha(); girarDerecha();  // Gira 180° (ahora mira en dirección opuesta)
-            moverAdelante();  // Retrocede
+            for (Modulo modulo : robot.getModulos()) {
+                if (modulo instanceof ModuloDinamicoHelicoidal) {
+                    ModuloDinamicoHelicoidal helicoidal = (ModuloDinamicoHelicoidal) modulo;
+                    SistemaControl controlHelicoidal = helicoidal.getSistemaControl();
+                    SistemaComunicacion comHelicoidal = helicoidal.getSistemaComunicacion();
+                    
+                    if (controlHelicoidal.enviarRespuestaAccion()) {
+                        helicoidal.moverseAtras();
+                        comHelicoidal.enviarMensaje("Movimiento helicoidal hacia atrás ejecutado");
+                    }
+                }
+            }
         }
     }
-
-    private static boolean intentarMovimientoRelativo(char direccionRelativa) {
-        // Intenta moverse en una dirección relativa (ej: derecha o izquierda respecto a la dirección actual)
+    
+    private static boolean intentarEsquivar(Robot robot, char direccionGiro, String tipoObstaculo) {
         char direccionOriginal = direccion;
-        switch (direccionRelativa) {
-            case '>': girarDerecha(); break;
-            case '<': girarIzquierda(); break;
+        
+        // Girar usando módulo de rotación
+        for (Modulo modulo : robot.getModulos()) {
+            if (modulo instanceof ModuloDinamicoRotacion) {
+                ModuloDinamicoRotacion rotacion = (ModuloDinamicoRotacion) modulo;
+                SistemaControl controlRotacion = rotacion.getSistemaControl();
+                SistemaComunicacion comRotacion = rotacion.getSistemaComunicacion();
+                
+                if (controlRotacion.enviarRespuestaAccion()) {
+                    if (direccionGiro == '>') {
+                        rotacion.girarDerecha();
+                        comRotacion.enviarMensaje("Giro a la derecha ejecutado");
+                        direccion = '>';
+                    } else {
+                        rotacion.girarIzquierda();
+                        comRotacion.enviarMensaje("Giro a la izquierda ejecutado");
+                        direccion = '<';
+                    }
+                }
+            }
         }
-        moverAdelante();
-        boolean exito = (matriz[posX][posY] == direccion);  // Verifica si se movió
-        if (!exito) {
-            direccion = direccionOriginal;  // Restaura la dirección si no se pudo mover
+        
+        // Verificar si el movimiento es posible
+        boolean movimientoValido = true;
+        int tempX = posX;
+        int tempY = posY;
+        
+        switch (direccion) {
+            case '^': tempX--; break;
+            case 'v': tempX++; break;
+            case '<': tempY--; break;
+            case '>': tempY++; break;
         }
-        return exito;
-    }//Para revisar implementacion con los métodos
-
+        
+        // Verificar con sensores
+        for (Modulo modulo : robot.getModulos()) {
+            if (modulo instanceof SensorProximidad) {
+                SensorProximidad sensor = (SensorProximidad) modulo;
+                if (sensor.detectarObstaculo(tempX, tempY, matriz)) {
+                    movimientoValido = false;
+                }
+            }
+        }
+        
+        if (!movimientoValido) {
+            direccion = direccionOriginal;
+            return false;
+        }
+        
+        return true;
+    }
     private static void girarDerecha() {
         switch (direccion) {
             case '^': direccion = '>'; break;
@@ -317,7 +433,7 @@ public class SistemaRobotEquipoD {
     }
 
 
-    public static void actualizarMatriz() {
+    public static void actualizarMatriz(Robot robot) {
         inicializarMatriz();
         colocarObstaculos();
         Scanner scanner = new Scanner(System.in);
@@ -335,7 +451,7 @@ public class SistemaRobotEquipoD {
 
             switch (opcion) {
                 case 1:
-                    moverAdelante();
+                    moverRobot(Robot);)
                     break;
                 case 2:
                     girarDerecha();

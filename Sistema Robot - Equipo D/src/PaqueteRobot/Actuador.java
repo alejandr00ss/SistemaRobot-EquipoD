@@ -28,9 +28,13 @@ public class Actuador implements InterfazActuador {
     public void setTipo(String tipo) { this.tipo = tipo; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     
-    
+
     @Override
     public int realizarAccion() {
-        return 0;//Lógica a implementar
+        // "cada uno de ellos realizará la acción pertinente a su módulo." [cite: 25]
+        if ("SPEAKER".equals(this.tipo)) {
+            System.out.println("Actuador (ID: " + id + ", Tipo: " + tipo + "): Emitiendo sonido de alerta.");
+            return 1;
+        } return 0;
     }
 }
