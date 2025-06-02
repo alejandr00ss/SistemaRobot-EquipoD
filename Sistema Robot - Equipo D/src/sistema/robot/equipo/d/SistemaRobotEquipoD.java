@@ -89,7 +89,7 @@ public class SistemaRobotEquipoD {
             sensorProximidad1.setNumeroSensores(sensorProximidad1.getSensores().size());
 
             //añadir actuadores
-            Actuador bocina = new Actuador(35654,"ALTAVOZ   ","Actuador de bocina");
+            Actuador bocina = new Actuador(35654,"ALTAVOZ","Actuador de bocina");
             altavoz1.agregarActuador(bocina);
             altavoz1.setNumeroActuadores(altavoz1.getActuadores().size());
             robots.add(robot1);
@@ -509,6 +509,7 @@ public class SistemaRobotEquipoD {
             } else if (opcion == 'q'){
                 scanner.close();
                 System.out.println("Saliendo de la simulación...");
+                robot.apagar();
                 return; // Sale del bucle y termina la simulación
             
             }  else {
