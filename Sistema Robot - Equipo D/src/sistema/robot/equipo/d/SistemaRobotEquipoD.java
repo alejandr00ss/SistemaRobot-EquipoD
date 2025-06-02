@@ -100,6 +100,11 @@ public class SistemaRobotEquipoD {
             altavoz1.setNumeroActuadores(altavoz1.getActuadores().size());
             robots.add(robot1);
 
+            //numero de motores predeterminados
+            extension1.setNumeroMotores(1);
+            rotacion1.setNumeroMotores(1);
+            helicoidal1.setNumeroMotores(1);
+
             ingresarSimulacion(usuario1.getId());
 
             //menuUsuario();
@@ -214,7 +219,7 @@ public class SistemaRobotEquipoD {
         robotUsuario.agregarModulo(camara);
         robotUsuario.agregarModulo(sensorProximidad);
         robotUsuario.agregarModulo(altavoz);
-        
+
         //Asignar sistemas de control a los modulos
         extension.setSistemaControl(new SistemaControl(extension.getId()));
         rotacion.setSistemaControl(new SistemaControl(rotacion.getId()));
@@ -222,14 +227,20 @@ public class SistemaRobotEquipoD {
         camara.setSistemaControl(new SistemaControl(camara.getId()));
         sensorProximidad.setSistemaControl(new SistemaControl(sensorProximidad.getId()));
         altavoz.setSistemaControl(new SistemaControl(altavoz.getId()));
-
+        
         //Crear sistemas de comunicacion para cada modulo
         SistemaComunicacion sControlExtension = new SistemaComunicacion(extension.getId());
+        sControlExtension.setReceptor(true);
         SistemaComunicacion sControlRotacion = new SistemaComunicacion(rotacion.getId());
+        sControlRotacion.setReceptor(true);
         SistemaComunicacion sControlHelicoidal = new SistemaComunicacion(helicoidal.getId());
+        sControlHelicoidal.setReceptor(true);
         SistemaComunicacion sControlCamara = new SistemaComunicacion(camara.getId());
+        sControlCamara.setEmisor(true);
         SistemaComunicacion sControlSensorProximidad = new SistemaComunicacion(sensorProximidad.getId());
+        sControlCamara.setEmisor(true);
         SistemaComunicacion sControlAltavoz = new SistemaComunicacion(altavoz.getId());
+        sControlAltavoz.setEmisor(true);
 
         //Asociar usuario a los sistemas de comunicacion
         sControlExtension.asociarUsuario(idUsuario);
@@ -261,6 +272,11 @@ public class SistemaRobotEquipoD {
         Actuador bocina = new Actuador(35654,"ALTAVOZ","Actuador de bocina");
         altavoz.agregarActuador(bocina);
         altavoz.setNumeroActuadores(altavoz.getActuadores().size());
+
+        //numero de motores predeterminados
+        extension.setNumeroMotores(1);
+        rotacion.setNumeroMotores(1);
+        helicoidal.setNumeroMotores(1);
 
         robots.add(robotUsuario);
         
@@ -523,38 +539,4 @@ public class SistemaRobotEquipoD {
             }
         } while(true);
     }
-    
-    /*public static void actualizarMatriz(Robot robot) {
-        inicializarMatriz();
-        colocarObstaculos();
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            imprimirMatriz();
-            System.out.println("\nOpciones:");
-            System.out.println("1. Mover adelante");
-            System.out.println("2. Girar derecha");
-            System.out.println("3. Girar izquierda");
-            System.out.println("4. Salir");
-            System.out.print("Seleccione una opción: ");
-
-            int opcion = scanner.nextInt();
-
-            switch (opcion) {
-                case 1:
-                    
-                    break;
-                case 2:
-                    
-                    break;
-                case 3:
-                    
-                    break;
-                case 4:
-                    scanner.close();
-                    return;
-                default:
-                    System.out.println("Opción no válida");
-            }
-        }
-    }*/
 }
