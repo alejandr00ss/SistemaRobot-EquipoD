@@ -1,8 +1,5 @@
 package PaqueteRobot;
 
-import java.util.List;
-import java.util.ArrayList;
-
 
 /**
  * tiene una relacion uno a uno con sistema de control, el sistema de control le pasa el mensaje
@@ -64,12 +61,9 @@ public class SistemaComunicacion{
     }
     
     // OPERACIONES
-    public List<String> enviarMensaje(String mensaje,int idModulo){
+    public String[] enviarMensaje(String mensaje,int idModulo){
         if (emisor == true){
-            List<String> mensajes = new ArrayList<>();
-            mensajes.add(mensaje);
-            mensajes.add(String.valueOf(idModulo));
-            return mensajes;
+            return new String[] { mensaje, Integer.toString(idModulo) };
         } else {
             System.out.println("El mensaje no se pudo enviar");
             return null;

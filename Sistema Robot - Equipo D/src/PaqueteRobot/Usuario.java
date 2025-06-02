@@ -36,10 +36,10 @@ public class Usuario {
         System.out.println("Ingrese el contenido del mensaje: ");
         String contenido = sc.nextLine();
         sc.close();
-        return new String[] { String.valueOf(this.id), destino, contenido };
-    } //logica sujeta a cambios
+        return new String[] { destino, contenido };
+    }
     
     public void recibirMensaje(String[] mensaje) {
-        System.out.println(mensaje[0] + " " + mensaje[1] + " " + mensaje[2]);
-    } // recibe mensaje del sistema de comunicación logica a modiificar
+        System.out.println(mensaje[0] + " " + mensaje[1]);
+    }
 }

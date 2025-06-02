@@ -609,4 +609,22 @@ public static void actualizarMatriz(Robot robot, char[][] matriz) {
 
     } while (true);
     }
+
+
+    public static void interaccionUsuario(Usuario usuario, Robot robot, char[][] matriz) {
+        String[] mensajesUsuario = usuario.enviarMensaje();
+        String[] mensajesModulo = new String[2];
+        for (Modulo modulo : robot.getModulos()) {
+            if (modulo.getId() == Integer.parseInt(mensajesUsuario[0])) {
+                SistemaComunicacion sc = modulo.getSistemaComunicacion();
+                sc.setReceptor(true);
+                sc.recibirMensaje(mensajesUsuario[1], usuario.getId());
+                sc.setReceptor(false);
+                sc.setEmisor(true);
+                mensajesModulo = sc.enviarMensaje(mensajesUsuario[1], modulo.getId());
+                sc.setEmisor(false);
+
+            }
+        }
+    }
 }
