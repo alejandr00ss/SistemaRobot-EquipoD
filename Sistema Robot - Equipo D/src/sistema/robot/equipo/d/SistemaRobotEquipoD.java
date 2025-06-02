@@ -489,7 +489,7 @@ public class SistemaRobotEquipoD {
                     System.out.println("CAMARA: Sensor fuera de los límites.");
                     // Algoritmo para evitar el obstáculo
                     int[] rotaciones = {1, -1}; // 1 para girar derecha, -1 para girar izquierda
-                    giro = rotacion.moverse(new float[] {rotaciones[new Random().nextInt(rotaciones.length)]});
+                    giro = helicoidal.moverse(new float[] {rotaciones[new Random().nextInt(rotaciones.length)]});
                     if(giro == 1) {
                         System.out.println("El robot ha girado a la derecha.");
                         girarDerecha();
