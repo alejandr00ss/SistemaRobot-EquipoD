@@ -11,7 +11,15 @@ public class ModuloDinamicoRotacion extends ModuloDinamico {
     }
 
     public int moverse(float[] movimiento){
-        return 0;//Logica a implementar
+        // Implementar la logica de rotacion
+        float r = movimiento[0];
+        if (r == 1){
+            return 1; // Rotar a la derecha
+        } else if (r == -1) {
+            return -1; // Rotar a la izquierda
+        } else {
+            return 0; // Movimiento no válido
+        }
     }
 
     @Override

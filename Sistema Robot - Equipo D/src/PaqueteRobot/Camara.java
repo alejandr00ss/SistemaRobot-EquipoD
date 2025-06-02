@@ -32,37 +32,40 @@ public class Camara extends ModuloEstaticoPercepcion implements InterfazSensor{
 
 
     //METODOS HEREDADOS
-
     
-    // O
     @Override
     public int procesarDatos(Object rawData) {
-
-        if (rawData instanceof String) {
-            String data = (String) rawData;
-
-            if ("MASCOTA".equals(data)) {
-                return 1;
-            } else if ("OBSTACULO".equals(data)) {
-                return 2;
-            } else if ("LIBRE".equals(data)) {
-                return 3;
-            } else if ("FUERA DE LIMITES".equals(data)) {
-                return 4;
-            } else if ("CARACTER NO RECONOCIDO".equals(data)) {
-                return 5;
-            } else {
-                System.out.println("Advertencia: String de datos no reconocido: " + data);
+        if (rawData instanceof List){
+            List<?> dataList = (List<?>) rawData;
+            if (dataList.isEmpty()) {
                 return -1;
             }
-        } else {
-            System.out.println("Advertencia: rawData no es de tipo String.");
-            return -1;
-        }
+            Object firstElement = dataList.get(0);
+            if (firstElement instanceof String) {
+                switch ((String) firstElement) {
+                    case "MASCOTA":
+                        return 1;
+                    case "OBSTACULO":
+                        return 2;
+                    case "LIBRE":
+                        return 3;
+                    case "FUERA DE LOS LIMITES":
+                        return 4;
+                    case "CARACTER NO RECONOCIDO":
+                        return 5;
+                    default:
+                        System.out.println("Advertencia: String de datos no reconocido: " + firstElement);
+                        return -1;
+                }
+            } else {
+                System.out.println("Advertencia: Elemento de la lista no es un String.");
+                return -1;
+            }
+        } return -1; // Si rawData no es una lista, retornar -1  
     }
 
     @Override
-    public Object captarInformacion(char rowChar, char colChar, char[][] matriz) {
+    public Object captarInformacion(int rowChar, int colChar, char[][] matriz) {
         if (sensores != null && !sensores.isEmpty()) {
             List<Object> resultadosSensores = new ArrayList<>();
             for (Sensor sensor : sensores) {

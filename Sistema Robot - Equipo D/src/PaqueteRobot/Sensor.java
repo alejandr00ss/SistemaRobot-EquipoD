@@ -40,7 +40,7 @@ public class Sensor implements InterfazSensor {
     }
 
     @Override
-    public Object captarInformacion(char rowChar, char colChar, char[][] matriz) {
+    public Object captarInformacion(int rowChar, int colChar, char[][] matriz) {
         int r = rowChar; 
         int c = colChar;
 

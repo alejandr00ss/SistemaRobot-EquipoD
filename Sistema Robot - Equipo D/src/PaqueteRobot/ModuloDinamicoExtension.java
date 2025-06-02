@@ -7,7 +7,21 @@ public class ModuloDinamicoExtension extends ModuloDinamico {
     }
 
     public int moverse(float[] movimiento){
-        return 0;//Logica a implementar
+        // Implementar la logica de movimiento
+        float x = movimiento[0];
+        float y = movimiento[1];
+
+        if (x == 0 && y < 0) {
+            return 1; // Avanzar
+        } else if (x == 0 && y > 0) {
+            return -1; // Retroceder
+        } else if (x > 0 && y == 0) {
+            return 2; // Girar a la derecha
+        } else if (x < 0 && y == 0) {
+            return -2; // Girar a la izquierda
+        } else {
+            return 0; // Movimiento no válido
+        }
     }
 
     @Override

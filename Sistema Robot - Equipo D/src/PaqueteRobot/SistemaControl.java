@@ -30,7 +30,8 @@ public class SistemaControl implements InterfazSistemaControl {
 
     // MÉTODOS
 
-    public void interpretarMensaje(String mensaje){
+    public void interpretarMensaje(String mensaje) {
+        List<String> soluciones = new ArrayList<>();
         System.out.println("[SistemaControl Módulo " + idModulo + "] Interpretando mensaje: " + mensaje);
         if (mensaje.equals("MASCOTA")) {
             System.out.println("Alerta: Mascota detectada. Tomando precauciones.");
@@ -48,10 +49,13 @@ public class SistemaControl implements InterfazSistemaControl {
 
         } else if (mensaje.equals("Avanzar")) {
             System.out.println("Comando: Mover adelante.");
-            gestionarSolucion(56754);
+            // Lógica para avanzar
+            soluciones = gestionarSolucion(56754);
+            System.out.println("Accion a realizar: " + soluciones.get(0) + " al modulo: " + soluciones.get(1));
+            idModulo = Integer.parseInt(soluciones.get(1));
+            // Enviar respuesta de acción al módulo
+            enviarRespuestaAccion();
 
-
-            enviarRespuestaAccion(); // Confirmar que el comando se está procesando
         } else if (mensaje.equals("DERECHA")) {
             System.out.println("Comando: Girar derecha.");
             // Lógica para girar
@@ -79,7 +83,7 @@ public class SistemaControl implements InterfazSistemaControl {
         
         if (idProblema == 56754) {
             soluciones.add("Avanzar");
-            soluciones.add(toString(idModulo))
+            soluciones.add(Integer.toString(idModulo));
         }
         return soluciones;
     }

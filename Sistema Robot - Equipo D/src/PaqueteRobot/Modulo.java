@@ -32,6 +32,7 @@ public abstract class Modulo implements InterfazModulo, InterfazSistemaControl {
         this.ancho = ancho;
         this.profundidad = profundidad;
         this.sistemaControl = new SistemaControl(id);
+        //this.sistemaComunicacion = new SistemaComunicacion(id);
         this.sistemaComunicacion = new SistemaComunicacion(id);
         this.discriminador = discriminador;
     }

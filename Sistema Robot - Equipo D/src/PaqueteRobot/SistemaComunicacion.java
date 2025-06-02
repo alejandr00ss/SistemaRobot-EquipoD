@@ -20,8 +20,8 @@ public class SistemaComunicacion{
     private Boolean receptor; //Para resolver la reflexividad
 
     // CONSTRUCTOR
-    public SistemaComunicacion(int idUsuario, int idModulo) {
-        this.idUsuario = idUsuario;
+    public SistemaComunicacion(int idModulo) {
+        this.idUsuario = 0; // Inicializado a 0, puede ser modificado posteriormente
         this.idModulo = idModulo;
         this.emisor = false;
         this.receptor = false;
@@ -46,11 +46,6 @@ public class SistemaComunicacion{
     }
 
     // SETTERS
-    public void setIdUsuario(int idUsuario){
-        this.idUsuario = idUsuario;
-    }
-
-
     public void setEmisor(Boolean emisor){
         this.emisor = emisor;
     }
@@ -61,6 +56,11 @@ public class SistemaComunicacion{
 
     public void setIdModulo(int idModulo){
         this.idModulo = idModulo;
+    }
+
+    // ASOCIACION CON USUARIO
+    public void asociarUsuario(int idUsuario){
+        this.idUsuario = idUsuario;
     }
     
     // OPERACIONES

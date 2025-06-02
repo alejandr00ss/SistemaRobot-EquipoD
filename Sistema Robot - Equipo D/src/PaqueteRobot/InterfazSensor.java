@@ -1,5 +1,5 @@
 package PaqueteRobot;
 
 public interface InterfazSensor {
-    public Object captarInformacion(char rowChar, char colChar, char[][] matriz);
+    public Object captarInformacion(int rowChar, int colChar, char[][] matriz);
 }

@@ -33,14 +33,21 @@ public class SensorProximidad extends ModuloEstaticoPercepcion implements Interf
     // OPERACIONES
     @Override
     public int procesarDatos(Object rawData) {
-         if (rawData instanceof Boolean) {
-            return ((Boolean) rawData) ? 1 : 0;
+        if (rawData instanceof List) {
+            List<?> dataList = (List<?>) rawData;
+            if (dataList.isEmpty()) {
+                return 0;
+            } 
+            Object firstElement = dataList.get(0);
+            if (firstElement instanceof Boolean){
+                return ((Boolean) firstElement) ? 1 : 0;
+            }
         }
         return 0;
     }
     
     @Override
-    public Object captarInformacion(char rowChar, char colChar, char[][] matriz) {
+    public Object captarInformacion(int rowChar, int colChar, char[][] matriz) {
         if (sensores != null && !sensores.isEmpty()) {
             List<Object> resultadosSensores = new ArrayList<>();
             for (Sensor sensor : sensores) {

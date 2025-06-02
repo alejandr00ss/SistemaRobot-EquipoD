@@ -26,5 +26,5 @@ public abstract class ModuloEstaticoPercepcion extends ModuloEstatico {
     // OPERACIONES ABSTRACTAS
     public abstract int procesarDatos(Object sensor);
     
-    public abstract Object captarInformacion(char rowChar, char colChar, char[][] matriz);
+    public abstract Object captarInformacion(int rowChar, int colChar, char[][] matriz);
 }
