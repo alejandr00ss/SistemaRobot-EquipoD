@@ -48,7 +48,6 @@ public class SistemaControl implements InterfazSistemaControl {
                 case '>': xprox = currentPosX + 1; break;
             }
 
-            // Lógica de sensado
             int resProximidad = sensorProximidad.procesarDatos(sensorProximidad.captarInformacion(yprox, xprox, matrizEntorno));
             int resCamara = camara.procesarDatos(camara.captarInformacion(yprox, xprox, matrizEntorno));
 
