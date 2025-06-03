@@ -113,7 +113,7 @@ public class SistemaRobotEquipoD {
             menuRobot(usuarioLogueado);
         } else {
             System.out.println("Usuario no encontrado o ID incorrecto.");
-            iniciarSesion();
+            menuUsuario();
         }
     }
 
@@ -366,7 +366,7 @@ public class SistemaRobotEquipoD {
         if (comandoUsuario.equalsIgnoreCase("q")) {
             usuario.recibirMensaje("Orden de apagado recibida.");
             robot.apagar();
-            return;
+            menuRobot(usuario);;
         }
 
         if (robot.getModulos() != null && !robot.getModulos().isEmpty()) {

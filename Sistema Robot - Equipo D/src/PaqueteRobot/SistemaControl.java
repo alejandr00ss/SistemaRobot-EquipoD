@@ -82,7 +82,7 @@ public class SistemaControl implements InterfazSistemaControl {
                                 case '>': robotDir[0] = '^'; break;
                             }
                             System.out.println("El robot ha girado a la izquierda. Nueva dirección: " + robotDir[0]);
-                            matrizEntorno[robotPos[1]][robotPos[0]] = robotDir[0]; // Actualizar visualmente
+                            matrizEntorno[robotPos[1]][robotPos[0]] = robotDir[0];
                         } else {
                             System.out.println("Giro no válido.");
                         }
@@ -115,7 +115,7 @@ public class SistemaControl implements InterfazSistemaControl {
                     if (rotacion != null) {
                         int[] rotaciones = {1, -1};
                         int giro = rotacion.moverse(new float[]{rotaciones[rand.nextInt(rotaciones.length)]});
-                        if (giro == 1) { // Lógica de girarDerecha
+                        if (giro == 1) {
                             switch (robotDir[0]) {
                                 case '^': robotDir[0] = '>'; break;
                                 case '>': robotDir[0] = 'v'; break;
@@ -152,7 +152,7 @@ public class SistemaControl implements InterfazSistemaControl {
                 case '>': robotDir[0] = '^'; break;
             }
             System.out.println("El robot ha girado a la izquierda. Nueva dirección: " + robotDir[0]);
-            matrizEntorno[robotPos[1]][robotPos[0]] = robotDir[0]; // Actualizar visualmente
+            matrizEntorno[robotPos[1]][robotPos[0]] = robotDir[0];
         } else if (comando.equalsIgnoreCase("d") || comando.equalsIgnoreCase("girar derecha")) {
 
             switch (robotDir[0]) {
